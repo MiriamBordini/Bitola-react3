@@ -1,75 +1,87 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-
-export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
-  );
-}
+import { useState } from "react";
+import { Text, View, Button, StyleSheet } from "react-native";
+import { TextInput } from "react-native-gesture-handler";
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    flex: 1,
+    justifyContent: "space-around",
+    alignItems: "center",
+    backgroundColor: "#efefef",
+    padding: 20,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  title: {
+    fontSize: 26,
+    color: "#AA2200",
+    fontWeight: "bold",
+    textAlign: "center"
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  input: {
+    width: "80%",
+    borderColor: "#000",
+    borderWidth: 1,
+    padding: 10,
+    borderRadius: 5,
+    backgroundColor: "#fff",
+    fontSize: 16,
   },
+  resultText: {
+    fontSize: 20,
+    color: "#121212",
+    marginTop: 10
+  }
 });
+
+export default function BitolaApp() {
+  const [corrente, setCorrente] = useState("");
+  const [distancia, setDistancia] = useState("");
+  const [bitola110, setBitola110] = useState(null);
+  const [bitola220, setBitola220] = useState(null);
+
+  const calcularBitola = () => {
+    const correnteNum = parseFloat(corrente);
+    const distanciaNum = parseFloat(distancia);
+
+    if (isNaN(correnteNum) || isNaN(distanciaNum)) {
+      alert("Digite valores válidos para corrente e distância.");
+      return;
+    }
+
+    const resultado110 = (2 * correnteNum * distanciaNum) / 294.64;
+    const resultado220 = (2 * correnteNum * distanciaNum) / 510.4;
+
+    setBitola110(resultado110.toFixed(2));
+    setBitola220(resultado220.toFixed(2));
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Calculadora de Bitola</Text>
+
+      <TextInput
+        placeholder="Corrente (A)"
+        style={styles.input}
+        keyboardType="numeric"
+        value={corrente}
+        onChangeText={setCorrente}
+      />
+
+      <TextInput
+        placeholder="Distância (m)"
+        style={styles.input}
+        keyboardType="numeric"
+        value={distancia}
+        onChangeText={setDistancia}
+      />
+
+      <Button title="Calcular Bitola" onPress={calcularBitola} />
+
+      {bitola110 && bitola220 && (
+        <>
+          <Text style={styles.resultText}>Bitola para 110V: {bitola110} mm²</Text>
+          <Text style={styles.resultText}>Bitola para 220V: {bitola220} mm²</Text>
+        </>
+      )}
+    </View>
+  );
+}
